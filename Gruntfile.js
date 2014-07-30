@@ -75,23 +75,23 @@ module.exports = function(grunt) {
         hostname: 'localhost'
       },
       proxies:
-          /*[
-                {
-                    context: '/v2',
-                    host: 'proxy.pal.sap.corp', // e.g. someproxy.com
-                    port: 8080, // proxy port
-                    headers: {
-                        "Host": "services.odata.org", // the real host you want to access
-                        Connection: "keep-alive"
-                    },
-                    changeOrigin: true
-                }
-            ]*/
-          [{
-            context: '/V2',
-            host: "services.odata.org",
-            changeOrigin: true
-      }],
+        [
+            { // Uncomment this if you're behind a corporate proxy
+                context: '/V2',
+                host: 'proxy.pal.sap.corp', // e.g. someproxy.com
+                port: 8080, // proxy port
+                headers: {
+                    Host: "services.odata.org" // the real host you want to access
+                },
+                changeOrigin: true
+            }
+            // Uncomment this if NOT behind a corporate proxy
+            /*{
+              context: '/V2',
+              host: "services.odata.org",
+              changeOrigin: true
+            }*/
+        ],
       livereload: {
         options: {
           middleware: function(connect) {
