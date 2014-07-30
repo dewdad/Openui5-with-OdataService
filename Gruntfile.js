@@ -27,7 +27,7 @@ module.exports = function(grunt) {
 
   // configurable paths
   var yeomanConfig = {
-    coffee: 'coffee',
+    //coffee: 'coffee',
     app: 'app'
   };
 
@@ -40,10 +40,10 @@ module.exports = function(grunt) {
         nospawn: true,
         livereload: true
       },
-      coffee: {
-        files: ['<%= yeoman.coffee %>/**/*.coffee'],
-        tasks: ['coffee:dist']
-      },
+//      coffee: {
+//        files: ['<%= yeoman.coffee %>/**/*.coffee'],
+//        tasks: ['coffee:dist']
+//      },
       app: {
         files: [
           '<%= yeoman.app %>/*.html',
@@ -53,20 +53,20 @@ module.exports = function(grunt) {
       }
     },
 
-    coffee: {
-      dist: {
-        files: [{
-          expand: true,
-          flatten: false,
-          cwd: '<%= yeoman.coffee %>',
-          src: ['**/*.coffee'],
-          dest: '<%= yeoman.app %>',
-          ext: function(ext) {
-            return ext.replace(/coffee$/, 'js');
-          }
-        }]
-      }
-    },
+//    coffee: {
+//      dist: {
+//        files: [{
+//          expand: true,
+//          flatten: false,
+//          cwd: '<%= yeoman.coffee %>',
+//          src: ['**/*.coffee'],
+//          dest: '<%= yeoman.app %>',
+//          ext: function(ext) {
+//            return ext.replace(/coffee$/, 'js');
+//          }
+//        }]
+//      }
+//    },
 
     connect: {
       options: {
@@ -74,10 +74,23 @@ module.exports = function(grunt) {
         // change this to '0.0.0.0' to access the server from outside
         hostname: 'localhost'
       },
-      proxies: [{
-        context: '/V2',
-        host: "services.odata.org",
-        changeOrigin: true
+      proxies:
+          /*[
+                {
+                    context: '/v2',
+                    host: 'proxy.pal.sap.corp', // e.g. someproxy.com
+                    port: 8080, // proxy port
+                    headers: {
+                        "Host": "services.odata.org", // the real host you want to access
+                        Connection: "keep-alive"
+                    },
+                    changeOrigin: true
+                }
+            ]*/
+          [{
+            context: '/V2',
+            host: "services.odata.org",
+            changeOrigin: true
       }],
       livereload: {
         options: {

@@ -12,18 +12,20 @@
     data-sap-ui-libs="sap.m"
     data-sap-ui-theme="sap_bluecrystal"
     data-sap-ui-xx-bindingSyntax="complex"
+    data-sap-ui-rootComponent="ui5app"
+    data-sap-ui-xx-rootComponentNode="content"
     data-sap-ui-resourceroots='{
-        "com.mitsuruog.openui5.odata": "./",
+        "ui5app": "./",
         "view": "./view",
         "util": "./util"
     }'>
   </script>
   <script>
-  new sap.m.Shell({
-    app: new sap.ui.core.ComponentContainer({
-      name : "com.mitsuruog.openui5.odata"
-    })
-  }).placeAt("content");
+//  new sap.m.Shell({
+//    app: new sap.ui.core.ComponentContainer({
+//      name : "ui5app"
+//    })
+//  }).placeAt("content");
   </script>
 
 </head>

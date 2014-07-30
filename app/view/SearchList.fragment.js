@@ -5,8 +5,8 @@
         id: oController.getView().createId("productList"),
         growing: true,
         growingThreshold: 5,
-        growingTriggerText: "もっと見る",
-        noDataText: "データがありません。",
+        growingTriggerText: "More",
+        //noDataText: "",
         headerToolbar: this._createHeaderToolbar(oController),
         columns: this._createHeaderColumns(oController),
         items: {
