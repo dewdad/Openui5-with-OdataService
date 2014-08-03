@@ -1,5 +1,6 @@
 (function () {
     jQuery.sap.declare("ui5app.Component");
+    jQuery.sap.require("ui5app.MyRouter");
 
     sap.ui.core.UIComponent.extend("ui5app.Component", {
         metadata: {
@@ -23,7 +24,7 @@
 
             routing: {
                 config: {
-                    //routerClass : sap.ui.demo.tdg.MyRouter, // optional
+                    routerClass : ui5app.MyRouter, // optional
                     viewType: "JS",
                     viewPath: "view",
                     targetControl: "appConteiner",
@@ -33,8 +34,18 @@
                 },
                 routes: [
                     {
-                        //pattern: "products",
                         pattern: "",
+                        name: "Home",
+                        view: "Home",
+                        viewType: "XML"
+                        /*subroutes: [{
+                            pattern : "{page}/:part:",
+                            name : "Tab",
+                            view : "Tab"
+                        }]*/
+                    },
+                    /*{
+                        pattern: "products",
                         name: "Master",
                         view: "Master"
                     },
@@ -42,7 +53,7 @@
                         pattern: "products/{id}",
                         name: "Detail",
                         view: "Detail"
-                    },
+                    },*/
                     {
                         pattern: ":all*:",
                         name: "NotFound",
@@ -57,9 +68,8 @@
             sap.ui.core.UIComponent.prototype.init.apply(this, arguments);
 
             // Init Router
-            router = this.getRouter();
-            this.routeHandler = new sap.m.routing.RouteMatchedHandler(router);
-            router.initialize();
+            /*this.routeHandler = new sap.m.routing.RouteMatchedHandler(this.getRouter());*/
+            this.getRouter().initialize();
 
             endpoint = sap.ui.model.odata.ODataModel("/V2/Northwind/Northwind.svc/", true);
             this.setModel(endpoint);
@@ -74,9 +84,10 @@
             });
         },
         destroy: function () {
-            if (this.routeHandler) {
+            /*if (this.routeHandler) {
                 this.routeHandler.destroy();
-            }
+            }*/
+            this.getRouter().destroy();
             return sap.ui.core.UIComponent.prototype.destroy.apply(this, arguments);
         }/*,
         createContent: function () {
