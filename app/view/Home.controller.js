@@ -17,8 +17,8 @@
             var viewDir = bindProp.viewDir;
 
             this.getRouter().navTo(
-                "Tile",
-                {part: viewDir}
+                viewDir/*,
+                {part: viewDir}*/
             );
 //			this.bus.publish("nav", "to", {
 //				id: ui.getRootResourceName()+".view."+viewDir+"."+viewDir,

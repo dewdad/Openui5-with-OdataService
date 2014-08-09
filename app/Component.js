@@ -44,6 +44,7 @@
                             view : "Tab"
                         }]*/
                     },
+
                     /*{
                         pattern: "products",
                         name: "Master",
@@ -58,7 +59,13 @@
                         pattern: ":all*:",
                         name: "NotFound",
                         view: "NotFound"
-                    }
+                    }/*,
+                    {
+                        pattern: "Form354",
+                        name: "Form354",
+                        view: "Form354.Master",
+                        viewType: "XML"
+                    }*/
                 ]
             }
         },

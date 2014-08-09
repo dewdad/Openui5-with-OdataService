@@ -26,8 +26,8 @@ sap.ui.controller("Form354.Master", {
   onInit: function (oEvent) {
 
     // set explored app's demo model on this sample
-    var oModel = new sap.ui.model.json.JSONModel("test-resources/sap/ui/demokit/explored/supplier.json");
-    this.getView().setModel(oModel);
+    /*var oModel = new sap.ui.model.json.JSONModel("test-resources/sap/ui/demokit/explored/supplier.json");
+    this.getView().setModel(oModel);*/
 
     // Set the initial form to be the display one
     this._showFormFragment("Display");

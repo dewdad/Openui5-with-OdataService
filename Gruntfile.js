@@ -76,7 +76,7 @@ module.exports = function(grunt) {
       },
       proxies:
         [
-            { // Uncomment this if you're behind a corporate proxy
+            /*{ // Uncomment this if you're behind a corporate proxy
                 context: '/V2',
                 host: 'proxy.pal.sap.corp', // e.g. someproxy.com
                 port: 8080, // proxy port
@@ -84,12 +84,12 @@ module.exports = function(grunt) {
                     Host: "services.odata.org" // the real host you want to access
                 },
                 changeOrigin: true
-            }
-            /*{ // Uncomment this if NOT behind a corporate proxy
+            }*/
+            { // Uncomment this if NOT behind a corporate proxy
               context: '/V2',
               host: "services.odata.org",
               changeOrigin: true
-            }*/
+            }
         ],
       livereload: {
         options: {
