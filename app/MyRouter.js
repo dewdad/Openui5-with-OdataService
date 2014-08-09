@@ -16,11 +16,13 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
             }
         });
         
-        this._oRouter._getMatchedRoutes = function(){
+        this._oRouter._getMatchedRoutes = function(sName){
             var routes = fn.apply(this, arguments);
             if(routes.length && routes.length>1){
                 var carIndex = arrayFindByKey(routes, 'route', that._catchAllRoute).index;
                 routes.splice(carIndex,1);
+            }else if(routes[0].route === that._catchAllRoute){
+                if(that.createConventionRoute(sName)) return this._getMatchedRoutes.apply(this, arguments);
             }
             return routes;
         };
@@ -36,46 +38,50 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
         // build a route with the view
         var hash = this.oHashChanger.getHash();
         if (!this._oRoutes[sName]) {
-            //try to load view
-            var that = this;
-            var viewPath = this._oConfig.viewPath;
-            var viewType;
-            var viewName;
-            var oView;
-            var viewResourcePath = $.sap.getResourcePath(viewPath);
-            $.sap.registerResourcePath(sName, viewResourcePath + '/' + sName);
-            //this.setView(viewName, ui.view(viewName));
-
-            // Iterate over possible main view names
-            $.each(['Main','Master','Page','v'], function(){
-                viewName = sName+'.'+this;
-                if(oView = ui.view(viewName)){
-                    that.setView(viewName, oView);
-                    viewType = ui.getViewType(oView);
-                    return false;
-                }
-            });
-
-            this._oRouter.greedy = true;
-            this.addRoute({
-                pattern: sName,
-                name: sName,
-                view: viewName,
-                viewType: viewType
-            });
-            var routesIndex = this._oRouter._routes.length;
-            var route;
-
-            while(route = this._oRouter._routes.length[--routesIndex]){
-                if(route._pattern === sName){
-                    route._priority = 1;
-                    break;
-                }
-            }
-
+            this.createConventionRoute(sName);
         }
         console.debug('MyRouter.navTo', {hash: hash, arguments: arguments});
         return sap.ui.core.routing.Router.prototype.navTo.call(this, sName, oParameters, bReplace || false);
+    },
+    
+    createConventionRoute: function(sName){
+        //try to load view
+        var that = this;
+        var viewPath = this._oConfig.viewPath;
+        var viewType;
+        var viewName;
+        var oView;
+        var viewResourcePath = $.sap.getResourcePath(viewPath);
+        $.sap.registerResourcePath(sName, viewResourcePath + '/' + sName);
+        //this.setView(viewName, ui.view(viewName));
+
+        // Iterate over possible main view names
+        $.each(['Main','Master','Page','v'], function(){
+            viewName = sName+'.'+this;
+            if(oView = ui.view(viewName)){
+                that.setView(viewName, oView);
+                viewType = ui.getViewType(oView);
+                return false;
+            }
+        });
+
+        this._oRouter.greedy = true;
+        this.addRoute({
+            pattern: sName,
+            name: sName,
+            view: viewName,
+            viewType: viewType
+        });
+        var routesIndex = this._oRouter._routes.length;
+        var route;
+
+        while(route = this._oRouter._routes.length[--routesIndex]){
+            if(route._pattern === sName){
+                route._priority = 1;
+                break;
+            }
+        }
+        return !!oView;
     },
 
     /**
