@@ -7,7 +7,7 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
     constructor: function () {
         sap.ui.core.routing.Router.apply(this, arguments);
         this._oRouteMatchedHandler = new sap.m.routing.RouteMatchedHandler(this);
-        
+
         var that = this;
         var fn = this._oRouter._getMatchedRoutes;
         $.each(this._oRouter._routes, function(){
@@ -15,7 +15,7 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
                 that._catchAllRoute = this;
             }
         });
-        
+
         this._oRouter._getMatchedRoutes = function(sName){
             var routes = fn.apply(this, arguments);
             if(routes.length && routes.length>1){
@@ -26,7 +26,7 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
             }
             return routes;
         };
-        
+
         /*this.attachRouteMatched(function(){ // happen after rout view is loaded
          debugger;
          });*/
@@ -43,20 +43,22 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
         console.debug('MyRouter.navTo', {hash: hash, arguments: arguments});
         return sap.ui.core.routing.Router.prototype.navTo.call(this, sName, oParameters, bReplace || false);
     },
-    
+
     createConventionRoute: function(sName){
         //try to load view
         var that = this;
         var viewPath = this._oConfig.viewPath;
+        var conventionViewFiles = ['Main','Master','Page','v'];
         var viewType;
         var viewName;
         var oView;
         var viewResourcePath = $.sap.getResourcePath(viewPath);
-        $.sap.registerResourcePath(sName, viewResourcePath + '/' + sName);
+        var conventionResourcePath = viewResourcePath + '/' + sName;
+        $.sap.registerResourcePath(sName, conventionResourcePath);
         //this.setView(viewName, ui.view(viewName));
 
         // Iterate over possible main view names
-        $.each(['Main','Master','Page','v'], function(){
+        $.each(conventionViewFiles, function(){
             viewName = sName+'.'+this;
             if(oView = ui.view(viewName)){
                 that.setView(viewName, oView);
@@ -64,6 +66,12 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
                 return false;
             }
         });
+
+        if(!oView){
+            console.error("The route requested could not be formed via convention." +
+              " The path, "+conventionResourcePath+", either does not exist, or does not contain any of the following files: "+ conventionViewFiles.join('.view.(xml/js), ')+'view.(xml/js).')
+            return;
+        }
 
         this._oRouter.greedy = true;
         this.addRoute({
