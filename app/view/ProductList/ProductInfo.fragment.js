@@ -1,7 +1,7 @@
 (function() {
   jQuery.sap.require("sap.ui.layout.form.SimpleForm");
 
-  sap.ui.jsfragment("view.ProductInfo", {
+  sap.ui.jsfragment("ProductList.ProductInfo", {
     createContent: function(oController) {
       return new sap.m.ObjectHeader({
         title: "{ProductName}",

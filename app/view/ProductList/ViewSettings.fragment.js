@@ -1,8 +1,8 @@
 (function() {
-  sap.ui.jsfragment("view.ViewSettings", {
+  sap.ui.jsfragment("ProductList.ViewSettings", {
     createContent: function(oController) {
       return new sap.m.ViewSettingsDialog({
-        title: "ソート&フィルタ",
+        title: "Products Settings",
         confirm: [oController.onChangeViewSettings, oController],
         sortItems: [
           new sap.m.ViewSettingsItem({

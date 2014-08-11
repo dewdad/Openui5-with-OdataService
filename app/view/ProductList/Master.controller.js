@@ -1,5 +1,5 @@
 (function() {
-  sap.ui.controller("view.Master", {
+  sap.ui.controller("ProductList.Master", {
     onInit: function() {
       this.router = sap.ui.core.UIComponent.getRouterFor(this);
       this.router.attachRouteMatched(this.onRouteMatched, this);

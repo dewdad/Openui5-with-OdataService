@@ -1,5 +1,5 @@
 (function() {
-  sap.ui.jsfragment("view.SearchList", {
+  sap.ui.jsfragment("ProductList.SearchList", {
     createContent: function(oController) {
       return new sap.m.Table({
         id: oController.getView().createId("productList"),
