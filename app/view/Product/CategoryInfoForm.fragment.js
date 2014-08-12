@@ -1,5 +1,4 @@
-(function() {
-  sap.ui.jsfragment("view.CategoryInfoForm", {
+  sap.ui.jsfragment("Product.CategoryInfoForm", {
     createContent: function(oController) {
       var form, grid;
       form = new sap.ui.layout.form.SimpleForm({
@@ -31,5 +30,3 @@
       });
     }
   });
-
-}).call(this);

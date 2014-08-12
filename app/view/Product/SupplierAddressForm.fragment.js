@@ -1,5 +1,4 @@
-(function() {
-  sap.ui.jsfragment("view.SupplierAddressForm", {
+  sap.ui.jsfragment("Product.SupplierAddressForm", {
     createContent: function(oController) {
       var form, grid;
       form = new sap.ui.layout.form.SimpleForm({
@@ -80,5 +79,3 @@
       });
     }
   });
-
-}).call(this);

@@ -1,12 +1,11 @@
-(function() {
-  sap.ui.controller("ProductList.Master", {
+ui5lib.Controller.extend("Product.Master", {
     onInit: function() {
-      this.router = sap.ui.core.UIComponent.getRouterFor(this);
-      this.router.attachRouteMatched(this.onRouteMatched, this);
-      this.query = this.getView().byId("query");
-      return this.productList = this.getView().byId("productList");
+      /*this.router = sap.ui.core.UIComponent.getRouterFor(this);
+      this.router.attachRouteMatched(this.onRouteMatched, this);*/
+      this.query = this.byId("query");
+      this.productList = this.byId("productList");
     },
-    onRouteMatched: function(evt) {
+    onMyRouteMatched: function(evt) {
       if (evt.getParameter("name") !== "Master") {
 
       }
@@ -27,7 +26,7 @@
     },
     onOpenDialog: function(evt) {
       if (!this._viewSetting) {
-        this._viewSetting = sap.ui.jsfragment("view.ViewSettings", this);
+        this._viewSetting = sap.ui.jsfragment("Product.ViewSettings", this);
       }
       return this._viewSetting.open();
     },
@@ -53,4 +52,3 @@
     }
   });
 
-}).call(this);

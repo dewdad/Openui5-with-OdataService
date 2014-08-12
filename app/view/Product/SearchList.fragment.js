@@ -1,12 +1,11 @@
-(function() {
-  sap.ui.jsfragment("ProductList.SearchList", {
+  sap.ui.jsfragment("Product.SearchList", {
     createContent: function(oController) {
       return new sap.m.Table({
         id: oController.getView().createId("productList"),
         growing: true,
         growingThreshold: 5,
         growingTriggerText: "More",
-        //noDataText: "",
+        noDataText: "no data",
         headerToolbar: this._createHeaderToolbar(oController),
         columns: this._createHeaderColumns(oController),
         items: {
@@ -98,5 +97,3 @@
       });
     }
   });
-
-}).call(this);

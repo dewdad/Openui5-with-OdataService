@@ -1,7 +1,6 @@
-(function() {
   jQuery.sap.require("sap.ui.layout.form.SimpleForm");
 
-  sap.ui.jsfragment("ProductList.ProductInfo", {
+  sap.ui.jsfragment("Product.ProductInfo", {
     createContent: function(oController) {
       return new sap.m.ObjectHeader({
         title: "{ProductName}",
@@ -41,5 +40,3 @@
       });
     }
   });
-
-}).call(this);

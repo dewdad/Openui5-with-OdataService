@@ -1,14 +1,11 @@
-(function() {
-  sap.ui.jsfragment("view.Footer", {
+  sap.ui.jsfragment("Product.Footer", {
     createContent: function(oController) {
       return new sap.m.Bar({
         contentRight: [
           new sap.m.Text({
-            text: "mitsuruog 2014"
+            text: "TDG Extended 2014"
           })
         ]
       });
     }
   });
-
-}).call(this);

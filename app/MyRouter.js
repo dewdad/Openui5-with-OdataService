@@ -36,19 +36,25 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
         // Here is the routing entry point for programmatic navigation (for lack of finding a better one).
         // Check for a name in this._oRoutes object. If it does not exist, try to create a view. On successful view creation
         // build a route with the view
+        var RouteName;
         var hash = this.oHashChanger.getHash();
         if (!this._oRoutes[sName]) {
-            this.createConventionRoute(sName);
+          RouteName = this.createConventionRoute(sName, oParameters);
         }
         console.debug('MyRouter.navTo', {hash: hash, arguments: arguments});
-        return sap.ui.core.routing.Router.prototype.navTo.call(this, sName, oParameters, bReplace || false);
+        return sap.ui.core.routing.Router.prototype.navTo.call(this, RouteName || sName, oParameters, bReplace || false);
     },
 
-    createConventionRoute: function(sName){
+    createConventionRoute: function(sName, oParameters){
         //try to load view
         var that = this;
+        var hash = hasher.getHash();
+        var VCdir = hash || sName;
+        var newHash = hash === sName? '': hash;
+        var hashParts = newHash && newHash.split('/') || [];
+        var hashPartsLen = hashParts.length || 0;
         var viewPath = this._oConfig.viewPath;
-        var conventionViewFiles = ['Main','Master','Page','v'];
+        var conventionViewFiles = hashPartsLen>0? ['Detail']: ['Main','Master','Page','v'];
         var viewType;
         var viewName;
         var oView;
@@ -59,8 +65,18 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
 
         // Iterate over possible main view names
         $.each(conventionViewFiles, function(){
-            viewName = sName+'.'+this;
-            if(oView = ui.view(viewName)){
+            viewName = VCdir+'.'+this;
+
+          if (that._oOwner) {
+              sap.ui.base.ManagedObject.runWithOwner(function() {
+                oView = ui.view(viewName);
+                console.debug('oview ran with owner', oView);
+              }, that._oOwner);
+            } else {
+              oView = ui.view(viewName);
+            }
+            console.debug('checking oView value before route creation', oView);
+            if(oView){
                 that.setView(viewName, oView);
                 viewType = ui.getViewType(oView);
                 return false;
@@ -68,18 +84,23 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
         });
 
         if(!oView){
+            console.log(oView);
             console.error("The route requested could not be formed via convention." +
               " The path, "+conventionResourcePath+", either does not exist, or does not contain any of the following files: "+ conventionViewFiles.join('.view.(xml/js), ')+'view.(xml/js).')
-            return;
+            //return;
         }
 
         this._oRouter.greedy = true;
         this.addRoute({
-            pattern: sName,
-            name: sName,
+            pattern: VCdir + (
+              (hashPartsLen>1? '/{'+hashParts[1]+'}': '') ||  (oParameters && oParameters.id && '/{id}' || '')
+              ),
+            name: sName = (hashPartsLen>0? hashParts[0]+'.': '')+sName,
             view: viewName,
             viewType: viewType
         });
+
+        console.debug('added dynamic route', that._oRoutes);
         var routesIndex = this._oRouter._routes.length;
         var route;
 
@@ -89,7 +110,7 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
                 break;
             }
         }
-        return !!oView;
+        return !!oView && sName;
     },
 
     /**
@@ -103,12 +124,19 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
      * @name sap.ui.core.routing.Router#getView
      * @function
      */
-    getView: function () {
+    getView: function (sViewName, sViewType, sViewId) {
         // Here is the routing entry for a HashChange
         // TODO: chech hash for view by convention. If view exists create a simple route and navTo it. Make use of
         // conventional dir structure that distinguishes view by feature and have the convention route load the main/master view
         var hash = this.oHashChanger.getHash();
         console.debug('MyRouter.getView', {hash: hash, arguments: arguments});
+
+      // When coventional routing occurs then the view instance is cached in the router, so we check for a
+      // cached version without viewPath before we continue to normal view loading
+      if(!this._oViews[sViewName]) {
+        var altViewName = sViewName.replace(this._oConfig.viewPath + '.', '');
+        sViewName = !!this._oViews[altViewName]? altViewName: sViewName;
+      }
 
         return sap.ui.core.routing.Router.prototype.getView.apply(this, arguments);
     },

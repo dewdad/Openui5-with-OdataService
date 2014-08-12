@@ -44,6 +44,16 @@
                             view : "Tab"
                         }]*/
                     },
+                 /* {
+                    pattern: "Product",
+                    name: "Product",
+                    view: "Product.Master"
+                  },
+                  {
+                    pattern: "Product/{id}",
+                    name: "Product.Detail",
+                    view: "Product.Detail"
+                  },*/
 
                     /*{
                         pattern: "products",

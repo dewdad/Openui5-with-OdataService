@@ -11,7 +11,7 @@
         },
         {
             "title": "Northwind Products List",
-            "viewDir": "ProductList",
+            "viewDir": "Product",
             "viewtype": "xml",
             "icon": "inbox",
             "info": "Overdue",
