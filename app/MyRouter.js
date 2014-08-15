@@ -16,15 +16,16 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
             }
         });
 
-        this._oRouter._getMatchedRoutes = function(sName){
+        this._oRouter._getMatchedRoutes = function(sHash){
             var routes = fn.apply(this, arguments);
+            debugger;
             if(routes.length && routes.length>1){
                 var carIndex = arrayFindByKey(routes, 'route', that._catchAllRoute).index;
                 routes.splice(carIndex,1);
-            }/*else if(routes[0].route === that._catchAllRoute){
-                if(that.processConventionNavRoute(sName)) return this._getMatchedRoutes.apply(this, arguments);
-            }*/
-            console.debug({sName:sName, routes: routes});
+            }else if(routes[0].route === that._catchAllRoute){
+                if(that.processConventionHashRoute(sHash)) return this._getMatchedRoutes.apply(this, arguments);
+            }
+            console.debug({sHash:sHash, routes: routes});
             return routes;
         };
 
@@ -46,6 +47,16 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
         return sap.ui.core.routing.Router.prototype.navTo.call(this, RouteName || sName, oParameters, bReplace || false);
     },
 
+    getHashPath: function(sHash){
+        var sPath = (/([\w\W])*(?=\/\d)/g).exec(sHash);
+        return (!!sPath && sPath[0]) || '';
+    },
+
+    // TODO: make this code sane and try to merge conventionRoute creation from nav and hash events
+    processConventionHashRoute: function(sHash){
+        debugger;
+        var currPath = this.getHashPath(sHash);
+    },
     processConventionNavRoute: function(sName, oParameters){
         
         if(!!this._oRoutes[sName]){
@@ -55,7 +66,7 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
         var that = this, viewType, viewName, oView;
 
         var hash = hasher.getHash();
-        var currPath = trim(hash, '/\\d');
+        var currPath = this.getHashPath(hash);//trim(hash, '/\\d');
         var VCdir = hash || sName;
         var newHash = hash === sName? '': hash;
         var hashParts = newHash && newHash.split('/') || [];
@@ -88,25 +99,34 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
                 return false;
             }
         });
-
+        console.debug(oView);
         if(!oView){
-            console.log(oView);
+
             console.error("The route requested could not be formed via convention." +
               " The path, "+conventionResourcePath+", either does not exist, or does not contain any of the following files: "+ conventionViewFiles.join('.view.(xml/js), ')+'view.(xml/js).')
-            //return;
+            return;
         }
 
+        var routePattern = VCdir + (
+            (hashPartsLen>1? '/{'+hashParts[1]+'}': '') ||  (oParameters && oParameters.id && '/{id}' || '')
+            );
+        var sName = !!currPath && currPath.split('/').concat(sName).join('.') || sName;
+
+        this.addConventionRoute(sName, routePattern, viewName, viewType);
+
+        return !!oView && sName;
+    },
+
+    addConventionRoute: function(routeName, routePattern, viewName, viewType){
         this._oRouter.greedy = true;
         this.addRoute({
-            pattern: VCdir + (
-              (hashPartsLen>1? '/{'+hashParts[1]+'}': '') ||  (oParameters && oParameters.id && '/{id}' || '')
-              ),
-            name: sName = !!currPath && currPath.split('/').concat(sName).join('.') || sName,
+            pattern: routePattern,
+            name: routeName,
             view: viewName,
             viewType: viewType
         });
 
-        console.debug('added dynamic route', that._oRoutes);
+        console.debug('added dynamic route', this._oRoutes);
         var routesIndex = this._oRouter._routes.length;
         var route;
 
@@ -116,7 +136,6 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
                 break;
             }
         }
-        return !!oView && sName;
     },
 
     /**
