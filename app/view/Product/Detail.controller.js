@@ -1,4 +1,4 @@
-  sap.ui.controller("Product.Detail", {
+ui5lib.Controller.extend("Product.Detail", {
     onInit: function() {
       this.tabs = this.getView().byId("tabs");
     },
@@ -12,4 +12,4 @@
     onNavBack: function(evt) {
       return window.history.go(-1);
     }
-  });
+});

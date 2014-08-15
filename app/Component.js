@@ -55,16 +55,6 @@
                     view: "Product.Detail"
                   },*/
 
-                    /*{
-                        pattern: "products",
-                        name: "Master",
-                        view: "Master"
-                    },
-                    {
-                        pattern: "products/{id}",
-                        name: "Detail",
-                        view: "Detail"
-                    },*/
                     {
                         pattern: ":all*:",
                         name: "NotFound",

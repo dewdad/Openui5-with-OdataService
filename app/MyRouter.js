@@ -21,9 +21,10 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
             if(routes.length && routes.length>1){
                 var carIndex = arrayFindByKey(routes, 'route', that._catchAllRoute).index;
                 routes.splice(carIndex,1);
-            }else if(routes[0].route === that._catchAllRoute){
-                if(that.createConventionRoute(sName)) return this._getMatchedRoutes.apply(this, arguments);
-            }
+            }/*else if(routes[0].route === that._catchAllRoute){
+                if(that.processConventionNavRoute(sName)) return this._getMatchedRoutes.apply(this, arguments);
+            }*/
+            console.debug({sName:sName, routes: routes});
             return routes;
         };
 
@@ -39,31 +40,36 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
         var RouteName;
         var hash = this.oHashChanger.getHash();
         if (!this._oRoutes[sName]) {
-          RouteName = this.createConventionRoute(sName, oParameters);
+          RouteName = this.processConventionNavRoute(sName, oParameters);
         }
         console.debug('MyRouter.navTo', {hash: hash, arguments: arguments});
         return sap.ui.core.routing.Router.prototype.navTo.call(this, RouteName || sName, oParameters, bReplace || false);
     },
 
-    createConventionRoute: function(sName, oParameters){
-        //try to load view
-        var that = this;
+    processConventionNavRoute: function(sName, oParameters){
+        
+        if(!!this._oRoutes[sName]){
+            return;
+        }
+
+        var that = this, viewType, viewName, oView;
+
         var hash = hasher.getHash();
+        var currPath = trim(hash, '/\\d');
         var VCdir = hash || sName;
         var newHash = hash === sName? '': hash;
         var hashParts = newHash && newHash.split('/') || [];
         var hashPartsLen = hashParts.length || 0;
         var viewPath = this._oConfig.viewPath;
         var conventionViewFiles = hashPartsLen>0? ['Detail']: ['Main','Master','Page','v'];
-        var viewType;
-        var viewName;
-        var oView;
+
         var viewResourcePath = $.sap.getResourcePath(viewPath);
         var conventionResourcePath = viewResourcePath + '/' + sName;
         $.sap.registerResourcePath(sName, conventionResourcePath);
         //this.setView(viewName, ui.view(viewName));
 
         // Iterate over possible main view names
+        // try to load view
         $.each(conventionViewFiles, function(){
             viewName = VCdir+'.'+this;
 
@@ -95,7 +101,7 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
             pattern: VCdir + (
               (hashPartsLen>1? '/{'+hashParts[1]+'}': '') ||  (oParameters && oParameters.id && '/{id}' || '')
               ),
-            name: sName = (hashPartsLen>0? hashParts[0]+'.': '')+sName,
+            name: sName = !!currPath && currPath.split('/').concat(sName).join('.') || sName,
             view: viewName,
             viewType: viewType
         });
@@ -129,7 +135,6 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
         // TODO: chech hash for view by convention. If view exists create a simple route and navTo it. Make use of
         // conventional dir structure that distinguishes view by feature and have the convention route load the main/master view
         var hash = this.oHashChanger.getHash();
-        console.debug('MyRouter.getView', {hash: hash, arguments: arguments});
 
       // When coventional routing occurs then the view instance is cached in the router, so we check for a
       // cached version without viewPath before we continue to normal view loading
@@ -137,8 +142,12 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
         var altViewName = sViewName.replace(this._oConfig.viewPath + '.', '');
         sViewName = !!this._oViews[altViewName]? altViewName: sViewName;
       }
+      
+      var oView = sap.ui.core.routing.Router.prototype.getView.apply(this, arguments);
+      
+      console.debug('MyRouter.getView',arguments, oView);
 
-        return sap.ui.core.routing.Router.prototype.getView.apply(this, arguments);
+      return oView;
     },
 
     myNavBack: function (sRoute, mData) {
