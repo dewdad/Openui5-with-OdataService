@@ -1,4 +1,5 @@
 ui5lib.Controller.extend("Product.Master", {
+    _searchColumns: ["Supplier/CompanyName","Category/CategoryName","ProductName"],
     onInit: function() {
       /*this.router = sap.ui.core.UIComponent.getRouterFor(this);
       this.router.attachRouteMatched(this.onRouteMatched, this);*/
@@ -13,9 +14,9 @@ ui5lib.Controller.extend("Product.Master", {
     onSearch: function(evt) {
       var binding, filters, query;
       query = this.query.getValue();
-      filters = [new sap.ui.model.Filter("ProductName", "Contains", query)];
+      //filters = [new sap.ui.model.Filter("ProductName", "Contains", query)];
       binding = this.productList.getBinding("items");
-      return binding.filter(filters, sap.ui.model.FilterType.Application);
+      return binding.x_search(this._searchColumns, query);//filter(filters, sap.ui.model.FilterType.Application);
     },
     onItemPress: function(evt) {
       var context;
