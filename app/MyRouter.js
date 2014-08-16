@@ -18,7 +18,6 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
 
         this._oRouter._getMatchedRoutes = function(sHash){
             var routes = fn.apply(this, arguments);
-            debugger;
             if(routes.length && routes.length>1){
                 var carIndex = arrayFindByKey(routes, 'route', that._catchAllRoute).index;
                 routes.splice(carIndex,1);
@@ -48,14 +47,37 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
     },
 
     getHashPath: function(sHash){
-        var sPath = (/([\w\W])*(?=\/\d)/g).exec(sHash);
-        return (!!sPath && sPath[0]) || '';
+        var hashParts = [];
+        $.each(sHash.split('/'), function(i,v){ return !isNumeric(v) && hashParts.push(v);})
+        return hashParts.join('/');
     },
 
     // TODO: make this code sane and try to merge conventionRoute creation from nav and hash events
     processConventionHashRoute: function(sHash){
-        debugger;
         var currPath = this.getHashPath(sHash);
+
+        var oView;
+
+        var hash = hasher.getHash();
+        //var VCdir = hash || sName;
+        //var newHash = hash === sName? '': hash;
+        var hashParts = hash && hash.split('/') || [];
+        var hashPartsLen = hashParts.length || 0;
+        var conventionViewFiles = hashPartsLen>1? ['Detail']: ['Main','Master','Page','v'];
+
+        var viewOpt = {viewPath: currPath, fileName: sName, viewName: '', viewType: ''};
+
+        if(oView = this.addConventionView(viewOpt, conventionViewFiles)) {
+
+            var routePattern = currPath + (
+                (hashPartsLen > 1 ? '/{id}' : '')
+                );
+            var sName = !!currPath && currPath.split('/').concat(sName).join('.') || sName;
+
+            this.addConventionRoute(sName, routePattern, viewOpt.viewName, viewOpt.viewType);
+        }
+
+        return !!oView && sName;
     },
     processConventionNavRoute: function(sName, oParameters){
         
@@ -63,7 +85,7 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
             return;
         }
 
-        var that = this, viewType, viewName, oView;
+        var oView;
 
         var hash = hasher.getHash();
         var currPath = this.getHashPath(hash);//trim(hash, '/\\d');
@@ -71,31 +93,59 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
         var newHash = hash === sName? '': hash;
         var hashParts = newHash && newHash.split('/') || [];
         var hashPartsLen = hashParts.length || 0;
-        var viewPath = this._oConfig.viewPath;
         var conventionViewFiles = hashPartsLen>0? ['Detail']: ['Main','Master','Page','v'];
 
-        var viewResourcePath = $.sap.getResourcePath(viewPath);
-        var conventionResourcePath = viewResourcePath + '/' + sName;
-        $.sap.registerResourcePath(sName, conventionResourcePath);
+        var viewOpt = {viewPath: VCdir, fileName: sName, viewName: '', viewType: ''};
+
+        if(oView = this.addConventionView(viewOpt, conventionViewFiles)) {
+
+            var routePattern = VCdir + (
+                /*(hashPartsLen > 1 ? '/{id}' : '') || */(oParameters && oParameters.id && '/{id}' || '')
+                );
+            var sName = !!currPath && currPath.split('/').concat(sName).join('.') || sName;
+
+            this.addConventionRoute(sName, routePattern, viewOpt.viewName, viewOpt.viewType);
+        }
+
+        return !!oView && sName;
+    },
+
+    /**
+     * The viewType and viewName members of viewOpt are for return value
+     * @param {object} viewOpt The view options object
+     * @param {string} viewOpt.viewPath the url path to the view to be loaded
+     * @param {string} viewOpt.fileName the view file name
+     * @param {string} viewOpt.viewName the generated viewName for the application, will use a dynamically added resource
+     * @param {string} viewOpt.viewType the type of the generated view
+     * @public
+     * @param fileNames {string[]} file names to be iterated over when trying to create the view
+     * @return {sap.ui.core.mvc.View} Either the view or undefined if no view was created
+     */
+    addConventionView: function(viewOpt, fileNames){
+        var viewResource = viewOpt.viewPath.replace('/','.');
+        var that = this;
+        var viewResourcePath = $.sap.getResourcePath(this._oConfig.viewPath);
+        var conventionResourcePath = viewResourcePath + '/' + viewOpt.viewPath;
+        $.sap.registerResourcePath(viewResource, conventionResourcePath);
         //this.setView(viewName, ui.view(viewName));
 
         // Iterate over possible main view names
         // try to load view
-        $.each(conventionViewFiles, function(){
-            viewName = VCdir+'.'+this;
+        $.each(fileNames, function(){
+            viewOpt.viewName = viewOpt.viewPath+'.'+this;
 
-          if (that._oOwner) {
-              sap.ui.base.ManagedObject.runWithOwner(function() {
-                oView = ui.view(viewName);
-                console.debug('oview ran with owner', oView);
-              }, that._oOwner);
+            if (that._oOwner) {
+                sap.ui.base.ManagedObject.runWithOwner(function() {
+                    oView = ui.view(viewOpt.viewName);
+                    console.debug('oview ran with owner', oView);
+                }, that._oOwner);
             } else {
-              oView = ui.view(viewName);
+                oView = ui.view(viewName);
             }
             console.debug('checking oView value before route creation', oView);
             if(oView){
-                that.setView(viewName, oView);
-                viewType = ui.getViewType(oView);
+                that.setView(viewOpt.viewName, oView);
+                viewOpt.viewType = ui.getViewType(oView);
                 return false;
             }
         });
@@ -103,18 +153,10 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
         if(!oView){
 
             console.error("The route requested could not be formed via convention." +
-              " The path, "+conventionResourcePath+", either does not exist, or does not contain any of the following files: "+ conventionViewFiles.join('.view.(xml/js), ')+'view.(xml/js).')
-            return;
+                " The path, "+conventionResourcePath+", either does not exist, or does not contain any of the following files: "+ conventionViewFiles.join('.view.(xml/js), ')+'view.(xml/js).')
+            return undefined;
         }
-
-        var routePattern = VCdir + (
-            (hashPartsLen>1? '/{'+hashParts[1]+'}': '') ||  (oParameters && oParameters.id && '/{id}' || '')
-            );
-        var sName = !!currPath && currPath.split('/').concat(sName).join('.') || sName;
-
-        this.addConventionRoute(sName, routePattern, viewName, viewType);
-
-        return !!oView && sName;
+        return oView;
     },
 
     addConventionRoute: function(routeName, routePattern, viewName, viewType){
