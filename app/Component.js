@@ -12,12 +12,13 @@
                 components : []
             },
             config : {
-                viewType: "JS"
-                /*resourceBundle : "i18n/messageBundle.properties",
+                viewType: "JS",
+                resourceBundle : "i18n/messageBundle.properties",
                  serviceConfig : {
-                 name : "Northwind",
-                 serviceUrl : "/uilib-sample/proxy/http/services.odata.org/V2/(S(sapuidemotdg))/OData/OData.svc/"
-                 }*/
+                     name : "Northwind",
+                    //serviceUrl : "/uilib-sample/proxy/http/services.odata.org/V2/(S(sapuidemotdg))/OData/OData.svc/"
+                     serviceUrl : "/V2/Northwind/Northwind.svc/"
+                 }
             },
 
             rootView :{id: "app", viewName: "view.App", type: "JS"},
@@ -78,9 +79,17 @@
             /*this.routeHandler = new sap.m.routing.RouteMatchedHandler(this.getRouter());*/
             this.getRouter().initialize();
 
-            endpoint = sap.ui.model.odata.ODataModel("/V2/Northwind/Northwind.svc/", true);
+            // oData endpoint init
+            endpoint = sap.ui.model.odata.ODataModel(this.getConfig("serviceConfig.serviceUrl"), true);
             this.setModel(endpoint);
-            busy = new sap.m.BusyDialog({
+
+            // i18n model init
+            var i18nModel = new sap.ui.model.resource.ResourceModel({
+                bundleUrl : [this.getRootPath(), this.getConfig("resourceBundle")].join("/"),
+                locale : sap.ui.getCore().getConfiguration().getLanguage()
+            });
+            this.setModel(i18nModel, "i18n");
+            /*busy = new sap.m.BusyDialog({ // TODO: REFACTOR so if the control requesting the data can be referenced through the load dispatch then make it busy
                 title: "Loading data"
             });
             endpoint.attachRequestSent(function () {
@@ -88,7 +97,17 @@
             });
             return endpoint.attachRequestCompleted(function () {
                 return busy.close();
-            });
+            });*/
+        },
+        getConfig: function(sPath){
+          return getObjProperty(this.getMetadata().getConfig(), sPath);
+        },
+        getRootPath: function(){
+            return jQuery.sap.getModulePath(this.getName());
+        },
+        getName: function(){
+            var md = this.getMetadata();
+            return md._sComponentName || md._sLibraryName;
         },
         destroy: function () {
             /*if (this.routeHandler) {

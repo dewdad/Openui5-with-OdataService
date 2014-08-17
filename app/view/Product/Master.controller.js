@@ -1,5 +1,5 @@
 ui5lib.Controller.extend("Product.Master", {
-    _searchColumns: ["Supplier/CompanyName","Category/CategoryName","ProductName"],
+    _searchColumns: ["Supplier/CompanyName","Category/CategoryName","ProductName","QuantityPerUnit"],
     onInit: function() {
       /*this.router = sap.ui.core.UIComponent.getRouterFor(this);
       this.router.attachRouteMatched(this.onRouteMatched, this);*/

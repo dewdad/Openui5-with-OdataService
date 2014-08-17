@@ -3,7 +3,8 @@
       return new sap.m.Table({
         id: oController.getView().createId("productList"),
         growing: true,
-        growingThreshold: 5,
+        growingScrollToLoad: true,
+        growingThreshold: 10,
         growingTriggerText: "More",
         noDataText: "no data",
         headerToolbar: this._createHeaderToolbar(oController),
