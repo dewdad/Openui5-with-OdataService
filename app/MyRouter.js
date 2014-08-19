@@ -153,7 +153,7 @@ sap.ui.core.routing.Router.extend("ui5app.MyRouter", {
         if(!oView){
 
             console.error("The route requested could not be formed via convention." +
-                " The path, "+conventionResourcePath+", either does not exist, or does not contain any of the following files: "+ conventionViewFiles.join('.view.(xml/js), ')+'view.(xml/js).')
+                " The path, "+conventionResourcePath+", either does not exist, or does not contain any of the following files: "+ fileNames.join('.view.(xml/js), ')+'view.(xml/js).')
             return undefined;
         }
         return oView;
