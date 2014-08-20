@@ -5,7 +5,7 @@
     },
     createContent: function(oController) {
       this.setDisplayBlock(true);
-      return new sap.m.App("appConteiner");
+      return new sap.m.App("AppContainer");
     }
   });
 

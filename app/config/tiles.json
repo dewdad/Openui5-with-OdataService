@@ -3,31 +3,24 @@
         {
             "title": "Form 3:5:4",
             "viewDir": "Form354",
-            "icon": "inbox",
-            "info": "Overdue",
-            "infoState": "Error",
-            "number": "",
-            "type": "Create"
-        },
-        {
-            "title": "Northwind Products List",
-            "viewDir": "Product",
-            "viewtype": "xml",
-            "icon": "inbox",
-            "info": "Overdue",
-            "infoState": "Error",
-            "number": "",
-            "type": "Create"
+            "icon": "form",
+            "type": "None"
         },
         {
             "title": "Northwind Products",
-            "viewDir": "NWProducts",
+            "viewDir": "Product",
             "viewtype": "xml",
             "icon": "inbox",
-            "info": "Overdue",
-            "infoState": "Error",
+            "type": "None"
+        },
+        {
+            "title": "HereMap Map Control",
+            "viewDir": "HereMap",
+            "viewtype": "xml",
+            "icon": "map",
+            "infoState": "Success",
             "number": "",
-            "type": "Create"
+            "type": "None"
         },
         {
             "icon" : "hint",

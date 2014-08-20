@@ -28,7 +28,7 @@
                     routerClass : ui5app.MyRouter, // optional
                     viewType: "JS",
                     viewPath: "view",
-                    targetControl: "appConteiner",
+                    targetControl: "AppContainer",
                     clearTarget: false,
                     transition: "slide",
                     targetAggregation: "pages"
