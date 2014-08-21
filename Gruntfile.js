@@ -78,7 +78,7 @@ module.exports = function(grunt) {
         [
             /*{ // Uncomment this if you're behind a corporate proxy
                 context: '/V2',
-                host: 'proxy.pal.sap.corp', // e.g. someproxy.com
+                host: 'proxy', // e.g. someproxy.com
                 port: 8080, // proxy port
                 headers: {
                     Host: "services.odata.org" // the real host you want to access
